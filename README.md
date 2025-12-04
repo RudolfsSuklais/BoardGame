@@ -5,9 +5,9 @@
 **Todo list:**
 
 -   [x] Multiple cursors
--   [ ] Main menu animations
--   [ ] Main menu buttons (start, quit, settings)
--   [ ] Character selection screen with animations
+-   [x] Main menu animations
+-   [x] Main menu buttons (start, quit, settings)
+-   [x] Character selection screen with animations
 -   [ ] Settings scene :)
 -   [ ] Board scene with throwable dice
 -   [ ] Game logic with multiple players :)
