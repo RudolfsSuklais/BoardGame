@@ -1,10 +1,10 @@
 using UnityEngine;
-using System.Collections;
 
 public class ChooseCharacterScript : MonoBehaviour
 {
     public GameObject[] characters;
     int characterIndex;
+
     public GameObject inputField;
     string characterName;
     public int playerCount = 2;
@@ -17,6 +17,7 @@ public class ChooseCharacterScript : MonoBehaviour
         {
             character.SetActive(false);
         }
+
         characters[characterIndex].SetActive(true);
     }
 
@@ -24,6 +25,7 @@ public class ChooseCharacterScript : MonoBehaviour
     {
         characters[characterIndex].SetActive(false);
         characterIndex++;
+
         if(characterIndex == characters.Length)
         {
             characterIndex = 0;
@@ -46,13 +48,15 @@ public class ChooseCharacterScript : MonoBehaviour
     {
         characterName = inputField.GetComponent<TMPro.TMP_InputField>().text;
 
-        if(characterName.Length > 3)
+        if (characterName.Length >= 3)
         {
             PlayerPrefs.SetInt("SelectedCharacter", characterIndex);
-            PlayerPrefs.SetInt("SelectedCharacter", characterIndex);
+            PlayerPrefs.SetString("PlayerName", characterName);
             PlayerPrefs.SetInt("PlayerCount", playerCount);
-            // StartCoroutine(sceneChanger.Delay("play"), characterIndex, characterName);
-        }else
-        inputField.GetComponent<TMPro.TMP_InputField>().Select();
+            StartCoroutine(sceneChanger.Delay("play", characterIndex, characterName));
+
+        }
+        else
+            inputField.GetComponent<TMPro.TMP_InputField>().Select();
     }
 }
