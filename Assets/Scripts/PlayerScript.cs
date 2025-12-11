@@ -15,26 +15,46 @@ public class PlayerScript : MonoBehaviour
     private const string textFileName = "PlayerNames";
 
 
-    void Start()
-    {
-        characterIndex = PlayerPrefs.GetInt("SelectedCharacter", 0);
-        GameObject mainCharacter = Instantiate(playerPrefabs[characterIndex], spawnPoint.transform.position, Quaternion.identity);
-        mainCharacter.GetComponent<NameScript>().SetName(PlayerPrefs.GetString("PlayerName", "John Doe"));
-        otherPlayers = new int[PlayerPrefs.GetInt("PlayerCount")];
-        string[] nameArray = ReadLinesFromFile(textFileName);
-        for (int i = 0; i < otherPlayers.Length - 1; i++)
+void Start()
 {
-    spawnPoint.transform.position += new Vector3(0.2f, 0, 0.08f);
-    index = Random.Range(0, playerPrefabs.Length);
+    GameManager gm = FindFirstObjectByType<GameManager>();
 
-    GameObject otherPlayer = Instantiate(
-        playerPrefabs[index], spawnPoint.transform.position, Quaternion.identity);
+    characterIndex = PlayerPrefs.GetInt("SelectedCharacter", 0);
 
-    string randomName = nameArray[Random.Range(0, nameArray.Length)];
-    otherPlayer.GetComponent<NameScript>().SetName(randomName);
+    GameObject mainCharacter = Instantiate(
+        playerPrefabs[characterIndex],
+        spawnPoint.transform.position,
+        Quaternion.identity
+    );
+
+    mainCharacter.GetComponent<NameScript>()
+        .SetName(PlayerPrefs.GetString("PlayerName", "John Doe"));
+
+    gm.RegisterPlayer(mainCharacter);
+    Debug.Log("REGISTERED MAIN: " + mainCharacter.name);
+
+    otherPlayers = new int[PlayerPrefs.GetInt("PlayerCount")];
+    string[] nameArray = ReadLinesFromFile(textFileName);
+
+    for (int i = 0; i < otherPlayers.Length - 1; i++)
+    {
+        spawnPoint.transform.position += new Vector3(0.2f, 0, 0.08f);
+        index = Random.Range(0, playerPrefabs.Length);
+
+        GameObject otherPlayer = Instantiate(
+            playerPrefabs[index],
+            spawnPoint.transform.position,
+            Quaternion.identity
+        );
+
+        string randomName = nameArray[Random.Range(0, nameArray.Length)];
+        otherPlayer.GetComponent<NameScript>().SetName(randomName);
+
+        gm.RegisterPlayer(otherPlayer);
+        Debug.Log("REGISTERED NPC: " + otherPlayer.name);
+    }
 }
 
-    }
 
   
     string[] ReadLinesFromFile(string fileName)
