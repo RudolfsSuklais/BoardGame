@@ -30,29 +30,47 @@ void Start()
     mainCharacter.GetComponent<NameScript>()
         .SetName(PlayerPrefs.GetString("PlayerName", "John Doe"));
 
+     CameraController cam = FindFirstObjectByType<CameraController>();
+if (cam != null)
+{
+    // kamera piezoomojas pie tava spēlētāja uzreiz spēles sākumā
+  cam.FocusPlayer(mainCharacter.transform);
+
+}
+   
+
     gm.RegisterPlayer(mainCharacter);
     Debug.Log("REGISTERED MAIN: " + mainCharacter.name);
 
     otherPlayers = new int[PlayerPrefs.GetInt("PlayerCount")];
     string[] nameArray = ReadLinesFromFile(textFileName);
 
-    for (int i = 0; i < otherPlayers.Length - 1; i++)
-    {
-        spawnPoint.transform.position += new Vector3(0.2f, 0, 0.08f);
-        index = Random.Range(0, playerPrefabs.Length);
+   Vector3 basePos = spawnPoint.transform.position;
+float spacing = 0.5f; // <-- maini šo, ja gribi vēl tālāk
 
-        GameObject otherPlayer = Instantiate(
-            playerPrefabs[index],
-            spawnPoint.transform.position,
-            Quaternion.identity
-        );
+for (int i = 0; i < otherPlayers.Length - 1; i++)
+{
+    index = Random.Range(0, playerPrefabs.Length);
 
-        string randomName = nameArray[Random.Range(0, nameArray.Length)];
-        otherPlayer.GetComponent<NameScript>().SetName(randomName);
+    Vector3 spawnPos = basePos + new Vector3(
+        (i + 1) * spacing,
+        0,
+        0
+    );
 
-        gm.RegisterPlayer(otherPlayer);
-        Debug.Log("REGISTERED NPC: " + otherPlayer.name);
-    }
+    GameObject otherPlayer = Instantiate(
+        playerPrefabs[index],
+        spawnPos,
+        Quaternion.identity
+    );
+
+    string randomName = nameArray[Random.Range(0, nameArray.Length)];
+    otherPlayer.GetComponent<NameScript>().SetName(randomName);
+
+    gm.RegisterPlayer(otherPlayer);
+    Debug.Log("REGISTERED NPC: " + otherPlayer.name);
+}
+
 }
 
 
@@ -71,3 +89,5 @@ void Start()
         }
     }
 }
+
+

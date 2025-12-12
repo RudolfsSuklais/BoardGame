@@ -6,8 +6,27 @@ public class PlayerMovement : MonoBehaviour
     public int tileIndex = 0;
     public float moveSpeed = 3f;
 
+    // Slotu pozīcijas uz viena tile (max 4 spēlētāji)
+    public static readonly Vector3[] TileSlots =
+    {
+        new Vector3( 0.25f, 0f,  0.25f),
+        new Vector3(-0.25f, 0f,  0.25f),
+        new Vector3( 0.25f, 0f, -0.25f),
+        new Vector3(-0.25f, 0f, -0.25f),
+    };
+
+    Animator animator;
+
+    void Awake()
+    {
+        animator = GetComponent<Animator>();
+    }
+
     public IEnumerator MoveSteps(int steps, Transform[] tiles)
     {
+        if (animator != null)
+            animator.SetBool("walk", true);
+
         for (int i = 0; i < steps; i++)
         {
             tileIndex++;
@@ -27,7 +46,22 @@ public class PlayerMovement : MonoBehaviour
                 yield return null;
             }
 
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(0.15f);
         }
+
+        if (animator != null)
+            animator.SetBool("walk", false);
+    }
+
+    // Izsauc cīņas animāciju
+    public void PlayFight()
+    {
+        animator?.SetTrigger("Fight");
+    }
+
+    // Drošībai
+    public void ResetToIdle()
+    {
+        animator?.SetBool("walk", false);
     }
 }
