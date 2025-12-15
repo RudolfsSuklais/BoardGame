@@ -56,34 +56,32 @@ public class DiceRollScript : MonoBehaviour
         Initialize();
     }
 
-    void Update()
+  void Update()
+{
+    if (rBody == null) return;
+
+    // ⛔ BLOĶĒ INTRO UN GAME OVER
+    if (gm != null && (gm.introPlaying || gm.gameEnded))
+        return;
+
+    if (!firstThrow && !isLanded && cam != null)
     {
-        if (rBody == null) return;
+        cam.FocusDice(transform);
+    }
 
-        // ⛔ BLOĶĒ VISU INTRO LAIKĀ
-        if (gm != null && gm.introPlaying)
-            return;
+    if (Input.GetMouseButtonDown(0) && (isLanded || !firstThrow))
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        // Kamera fokusē kauliņu, kamēr gaida metienu
-        if (!firstThrow && !isLanded && cam != null)
+        if (Physics.Raycast(ray, out RaycastHit hit) &&
+            hit.collider != null &&
+            hit.collider.gameObject == gameObject)
         {
-            cam.FocusDice(transform);
-        }
-
-        // Klikšķis uz kauliņa
-        if (Input.GetMouseButtonDown(0) && (isLanded || !firstThrow))
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            if (Physics.Raycast(ray, out RaycastHit hit) &&
-                hit.collider != null &&
-                hit.collider.gameObject == gameObject)
-            {
-                firstThrow = true;
-
-                cam?.FollowDiceFall(transform);
-                RollDice();
-            }
+            firstThrow = true;
+            cam?.FollowDiceFall(transform);
+            RollDice();
         }
     }
+}
+
 }

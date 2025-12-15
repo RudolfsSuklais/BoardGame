@@ -31,8 +31,8 @@ public class PlayerMovement : MonoBehaviour
         {
             tileIndex++;
 
-            if (tileIndex >= tiles.Length)
-                tileIndex = 0;
+    tileIndex = Mathf.Min(tileIndex, tiles.Length - 1);
+
 
             Vector3 targetPos = tiles[tileIndex].position;
 
