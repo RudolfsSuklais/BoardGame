@@ -12,6 +12,9 @@ public static class LeaderboardManager
     // Formāts: Name|Wins|BestScore|LastWinDate(ISO)
     public static void AddWin(string playerName, int score)
     {
+        Debug.Log("SAVING LEADERBOARD TO:");
+Debug.Log(FilePath);
+
         var data = LoadInternal();
 
         if (!data.ContainsKey(playerName))
@@ -56,41 +59,80 @@ public static class LeaderboardManager
     // INTERNAL
     // ==========================
 
-    static Dictionary<string, LeaderboardEntry> LoadInternal()
+  static Dictionary<string, LeaderboardEntry> LoadInternal()
+{
+    Debug.Log("=== LOAD LEADERBOARD START ===");
+    Debug.Log("PATH: " + FilePath);
+
+    var result = new Dictionary<string, LeaderboardEntry>();
+
+    if (!File.Exists(FilePath))
     {
-        var result = new Dictionary<string, LeaderboardEntry>();
-
-        if (!File.Exists(FilePath))
-            return result;
-
-        foreach (string line in File.ReadAllLines(FilePath))
-        {
-            if (string.IsNullOrWhiteSpace(line)) continue;
-
-            string[] parts = line.Split('|');
-            if (parts.Length != 4) continue;
-
-            if (!int.TryParse(parts[1], out int wins)) continue;
-            if (!int.TryParse(parts[2], out int bestScore)) continue;
-
-            if (!DateTime.TryParse(
-                parts[3],
-                null,
-                DateTimeStyles.RoundtripKind,
-                out DateTime date))
-                continue;
-
-            result[parts[0]] = new LeaderboardEntry
-            {
-                Name = parts[0],
-                Wins = wins,
-                BestScore = bestScore,
-                LastWinDate = date
-            };
-        }
-
+        Debug.LogError("❌ FILE DOES NOT EXIST");
         return result;
     }
+
+    string[] lines = File.ReadAllLines(FilePath);
+    Debug.Log("LINES COUNT: " + lines.Length);
+
+    foreach (string line in lines)
+    {
+        Debug.Log("RAW LINE: [" + line + "]");
+
+        if (string.IsNullOrWhiteSpace(line))
+        {
+            Debug.Log("⏭ EMPTY LINE SKIPPED");
+            continue;
+        }
+
+        string[] parts = line.Split('|');
+        Debug.Log("PARTS COUNT: " + parts.Length);
+
+        if (parts.Length != 4)
+        {
+            Debug.LogError("❌ WRONG FORMAT, EXPECTED 4 PARTS");
+            continue;
+        }
+
+        if (!int.TryParse(parts[1], out int wins))
+        {
+            Debug.LogError("❌ WINS PARSE FAIL: " + parts[1]);
+            continue;
+        }
+
+        if (!int.TryParse(parts[2], out int bestScore))
+        {
+            Debug.LogError("❌ SCORE PARSE FAIL: " + parts[2]);
+            continue;
+        }
+
+        if (!DateTime.TryParseExact(
+            parts[3],
+            "O",
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.None,
+            out DateTime date))
+        {
+            Debug.LogError("❌ DATE PARSE FAIL: " + parts[3]);
+            continue;
+        }
+
+        Debug.Log("✅ ENTRY LOADED: " + parts[0]);
+
+        result[parts[0]] = new LeaderboardEntry
+        {
+            Name = parts[0],
+            Wins = wins,
+            BestScore = bestScore,
+            LastWinDate = date
+        };
+    }
+
+    Debug.Log("=== LOAD FINISHED | ENTRIES: " + result.Count + " ===");
+    return result;
+}
+
+
 
     static void SaveInternal(Dictionary<string, LeaderboardEntry> data)
     {

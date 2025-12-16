@@ -2,12 +2,10 @@ using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
 
-
 public class LeaderboardUI : MonoBehaviour
 {
     public Transform contentParent;
-    public TextMeshProUGUI entryPrefab;
-    
+    public GameObject entryPrefab;
 
     public void Show()
     {
@@ -20,33 +18,53 @@ public class LeaderboardUI : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-  void Refresh()
+    void Refresh()
 {
+    Debug.Log("=== LEADERBOARD UI REFRESH ===");
+
+    if (contentParent == null)
+    {
+        Debug.LogError("❌ contentParent is NULL");
+        return;
+    }
+
+    if (entryPrefab == null)
+    {
+        Debug.LogError("❌ entryPrefab is NULL");
+        return;
+    }
+
     foreach (Transform child in contentParent)
         Destroy(child.gameObject);
 
     List<LeaderboardEntry> entries = LeaderboardManager.Load();
 
-    Debug.Log($"LEADERBOARD ENTRIES: {entries.Count}");
+    Debug.Log("ENTRIES RECEIVED IN UI: " + entries.Count);
 
     foreach (var e in entries)
     {
-        Debug.Log($"ADD UI: {e.Name}");
+        Debug.Log("UI ADD ENTRY: " + e.Name);
 
-        var item = Instantiate(entryPrefab, contentParent);
-        item.text = "TEST TEXT";
-item.color = Color.white;
-item.fontSize = 36;
+        GameObject go = Instantiate(entryPrefab, contentParent);
+        go.SetActive(true);
 
-        item.gameObject.SetActive(true);
+        var text = go.GetComponentInChildren<TextMeshProUGUI>(true);
 
-       item.text =
-    $"{e.Name} | " +
-    $"SCORE: {e.BestScore} | " +
-    $"WINS: {e.Wins} | " +
-    $"{e.LastWinDate:yyyy-MM-dd}";
+        if (text == null)
+        {
+            Debug.LogError("❌ NO TextMeshProUGUI FOUND IN PREFAB");
+            continue;
+        }
 
+        text.text =
+            $"{e.Name} | " +
+            $"Score: {e.BestScore} | " +
+            $"Wins: {e.Wins} | " +
+            $"{e.LastWinDate:yyyy-MM-dd}" ;
     }
+
+    Debug.Log("=== UI REFRESH DONE ===");
 }
+
 
 }

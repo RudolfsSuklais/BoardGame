@@ -6,6 +6,10 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+
+    [Header("Settings")]
+public GameObject settingsCanvas;
+
     
     [Header("Pause")]
     public GameObject pauseCanvas;
@@ -362,11 +366,20 @@ public void GoToMenuFromPause()
 public void OpenLeaderboard()
 {
     if (leaderboardCanvas != null)
+    {
         leaderboardCanvas.SetActive(true);
+
+        var ui = leaderboardCanvas.GetComponent<LeaderboardUI>();
+        if (ui != null)
+            ui.Show();
+        else
+            Debug.LogError("❌ LeaderboardUI component missing on leaderboardCanvas");
+    }
 
     if (pauseCanvas != null)
         pauseCanvas.SetActive(false);
 }
+
 
 public void CloseLeaderboard()
 {
@@ -376,6 +389,19 @@ public void CloseLeaderboard()
     if (pauseCanvas != null)
         pauseCanvas.SetActive(true);
 }
+
+public void OpenSettings()
+{
+    settingsCanvas.SetActive(true);
+    pauseCanvas.SetActive(false);
+}
+
+public void CloseSettings()
+{
+    settingsCanvas.SetActive(false);
+    pauseCanvas.SetActive(true);
+}
+
 
 
 }
